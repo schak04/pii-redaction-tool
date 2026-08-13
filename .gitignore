@@ -1,4 +1,7 @@
 input/
+output/
+.venv/
 learning/
 __pycache__/
 *.py[cod]
+
