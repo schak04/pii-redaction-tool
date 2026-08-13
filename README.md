@@ -50,19 +50,6 @@ The final run processed:
   - `<EMAIL_ADDRESS>`: 68
   - `<PHONE_NUMBER>`: 50
 
-The controlled benchmark produced:
-
-| Metric | Result |
-| :--- | :--- |
-| **True Positives (TP)** | 14 |
-| **False Positives (FP)** | 0 |
-| **False Negatives (FN)** | 0 |
-| **Precision** | 100% |
-| **Recall** | 100% |
-| **F1 Score** | 100% |
-
-These benchmark metrics represent performance on the controlled synthetic test cases, not the entire real prospectus. The real document contains contextual and formatting cases that introduce statistical false positives and false negatives.
-
 ---
 
 ## Security & Privacy Considerations
