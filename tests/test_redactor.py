@@ -19,6 +19,10 @@ class TestDOCXRedactor(unittest.TestCase):
         p1.add_run(" today.")
 
         doc.add_paragraph("Sans lives in Snowdin.")
+        
+        table = doc.add_table(rows=1, cols=1)
+        table.rows[0].cells[0].paragraphs[0].text = "Email: hornet@hallow-nest.org"
+
         doc.save(str(self.doc_path))
 
     def tearDown(self) -> None:
@@ -32,18 +36,24 @@ class TestDOCXRedactor(unittest.TestCase):
         p2_detections = [
             RecognizerResult(entity_type="PERSON", start=0, end=4, score=0.9)
         ]
+        table_detections = [
+            RecognizerResult(entity_type="EMAIL_ADDRESS", start=7, end=29, score=1.0)
+        ]
 
-        redactor.redact([p1_detections, p2_detections])
+        redactor.redact([p1_detections, p2_detections, table_detections])
         redactor.save(self.out_path)
 
         redacted_doc = Document(str(self.out_path))
         text1 = redacted_doc.paragraphs[0].text
         text2 = redacted_doc.paragraphs[1].text
+        tbl_text = redacted_doc.tables[0].rows[0].cells[0].paragraphs[0].text
 
         self.assertIn("<EMAIL_ADDRESS>", text1)
         self.assertNotIn("papyrus@undertale.com", text1)
         self.assertIn("<PERSON>", text2)
         self.assertNotIn("Sans", text2)
+        self.assertIn("<EMAIL_ADDRESS>", tbl_text)
+        self.assertNotIn("hornet@hallow-nest.org", tbl_text)
 
     def test_multi_run_spanning_redaction(self) -> None:
         doc = Document()

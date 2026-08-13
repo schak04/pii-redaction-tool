@@ -3,6 +3,8 @@ from typing import List, Union
 from docx import Document
 from presidio_analyzer import RecognizerResult
 
+from src.extractor import iter_all_paragraphs
+
 def redact_paragraph_runs(paragraph, detections: List[RecognizerResult]) -> None:
     if not detections or not paragraph.runs:
         return
@@ -60,7 +62,8 @@ class DOCXRedactor:
         self.document = Document(str(self.docx_path))
 
     def redact(self, paragraph_detections: List[List[RecognizerResult]]) -> Document:
-        for paragraph, detections in zip(self.document.paragraphs, paragraph_detections):
+        all_paragraphs = list(iter_all_paragraphs(self.document))
+        for paragraph, detections in zip(all_paragraphs, paragraph_detections):
             redact_paragraph_runs(paragraph, detections)
         return self.document
 
