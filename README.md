@@ -50,6 +50,10 @@ The final run processed:
   - `<EMAIL_ADDRESS>`: 68
   - `<PHONE_NUMBER>`: 50
 
+Manual inspection showed that many names, email addresses, phone numbers, and table-contained PII were successfully redacted. However, some PII was missed, including some names that were not detected by the English spaCy NER model.
+
+The document also contains a scanned PAN card near the end. Its name, father's name, date of birth, PAN number, and QR code are embedded in an image and therefore remain unredacted by the current text-based pipeline.
+
 ---
 
 ## Security & Privacy Considerations
