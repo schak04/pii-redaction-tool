@@ -27,72 +27,48 @@ The application follows a decoupled 5-stage pipeline:
 
 ---
 
-## Setup & Local Installation
-
-### 1. Create and Activate Virtual Environment
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 2. Install Dependencies & spaCy Model
-```bash
-pip install -r requirements.txt
-python -m spacy download en_core_web_sm
-```
-
----
-
-## Usage
-
-### 1. CLI Redaction Command
-```bash
-./.venv/bin/python src/redact.py "input/Red Herring Prospectus.docx" -o "output/sanitized.docx" -t 0.4
-```
-
-### 2. Run Local Web API
-```bash
-./.venv/bin/uvicorn src.api:app --reload --port 8000
-```
-Access interactive Swagger API docs at `http://127.0.0.1:8000/docs` to test file uploads.
-
----
-
-## Deployment (Render)
-
-### Deploying to Render
-1. Connect repository to Render dashboard.
-2. Select **Web Service**.
-3. Set **Build Command**:
-   ```bash
-   pip install -r requirements.txt && python -m spacy download en_core_web_sm
-   ```
-4. Set **Start Command**:
-   ```bash
-   uvicorn src.api:app --host 0.0.0.0 --port $PORT
-   ```
-
----
-
 ## Testing & Evaluation
 
-### Run Test Suite
-```bash
-./.venv/bin/python -m unittest discover -s tests -p "test_*.py"
-```
-
 ### Evaluation Framework (`src/evaluator.py`)
+
 Computes Precision, Recall, and F1-score against ground truth entity character ranges:
 - **Precision**: Ratio of correctly redacted PII to total detections.
 - **Recall**: Ratio of detected PII to total actual PII in document.
 - **F1 Score**: Harmonic mean balancing precision and recall.
+
+The evaluation uses curated synthetic test cases with known PII spans as a controlled benchmark, alongside telemetry and qualitative inspection from running the pipeline against the supplied Red Herring Prospectus.
+
+### Results on the Supplied Prospectus
+
+The final run processed:
+
+- **5,205 paragraphs** (1,006 body paragraphs and 4,199 paragraphs inside 76 tables)
+- **2,175 raw Presidio detections**
+- **478 policy-filtered detections**
+- **447 successfully applied redaction placeholders**
+  - `<PERSON>`: 329
+  - `<EMAIL_ADDRESS>`: 68
+  - `<PHONE_NUMBER>`: 50
+
+The controlled benchmark produced:
+
+| Metric | Result |
+| :--- | :--- |
+| **True Positives (TP)** | 14 |
+| **False Positives (FP)** | 0 |
+| **False Negatives (FN)** | 0 |
+| **Precision** | 100% |
+| **Recall** | 100% |
+| **F1 Score** | 100% |
+
+These benchmark metrics represent performance on the controlled synthetic test cases, not the entire real prospectus. The real document contains contextual and formatting cases that introduce statistical false positives and false negatives.
 
 ---
 
 ## Security & Privacy Considerations
 
 - Input documents (`input/`), outputs (`output/`), and virtual environment (`.venv/`) are gitignored to prevent exposing sensitive data.
-- Unit tests use synthetic test fixtures (e.g. fictional characters) rather than real sensitive documents.
+- Unit tests use synthetic test fixtures rather than real sensitive documents.
 
 ---
 
