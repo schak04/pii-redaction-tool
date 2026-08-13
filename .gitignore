@@ -1,2 +1,4 @@
 input/
 learning/
+__pycache__/
+*.py[cod]
