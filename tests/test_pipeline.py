@@ -1,3 +1,5 @@
+import sys
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -32,6 +34,20 @@ class TestPipeline(unittest.TestCase):
         self.assertIn("<EMAIL_ADDRESS>", text1)
         self.assertNotIn("192.168.1.1", text2)
         self.assertIn("<IP_ADDRESS>", text2)
+
+    def test_cli_execution(self) -> None:
+        cmd = [
+            sys.executable,
+            "src/redact.py",
+            str(self.in_doc),
+            "-o",
+            str(self.out_doc),
+            "-t",
+            "0.3",
+        ]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        self.assertEqual(res.returncode, 0, msg=f"CLI failed with error:\n{res.stderr}")
+        self.assertTrue(self.out_doc.exists())
 
 if __name__ == "__main__":
     unittest.main()
