@@ -1,0 +1,7 @@
+.venv/
+input/
+output/
+learning/
+.git/
+__pycache__/
+*.pyc
